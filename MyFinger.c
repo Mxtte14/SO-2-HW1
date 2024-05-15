@@ -11,6 +11,10 @@
 // Header
 #include "header.h"
 
+//|--------------------------------|//
+//| IMPLEMENTAZIONI DELLE FUNZIONI |// 
+//|--------------------------------|//
+
 // Funzione che prende un nome specificato in input in argv e controlla se esiste in users_logged e in pwd_users
 int search_utent(char* nome, int cont_found){
     // Contatore per iterare in users_logged
@@ -69,21 +73,14 @@ int main(int argc, char** argv){
     // Itera sugli arogmenti presi in input e controlla quali comandi sono stati specificati
     for(int opt = 1; opt < argc; opt ++){
         // Se l'argomento è -l allora l'opzione l è settata a true
-        if(strcmp(argv[opt],"-l") == 0) {
-            opts.l = true;
-        }
+        if(strcmp(argv[opt],"-l") == 0) opts.l = true;
         // Se l'argomento è -s allora l'opzzione s è settata a rue
-        else if(strcmp(argv[opt],"-s") == 0){
-            opts.s = true;
-        }
+        else if(strcmp(argv[opt],"-s") == 0) opts.s = true;
         // Se l'argomento è -m allora l'opzione m è settata a true
-        else if(strcmp(argv[opt],"-m") == 0){
-            opts.m = true;
-        }
+        else if(strcmp(argv[opt],"-m") == 0) opts.m = true;
         // Se l'argomento è -p allora l'opzione p è settata a true
-        else if(strcmp(argv[opt], "-p") == 0){
-            opts.p = true;
-        }
+        else if(strcmp(argv[opt], "-p") == 0) opts.p = true;
+        // Se l'argomento non e' un comando allora e' un nome utente
         else{
             // Se l'argomento è un nome utente allora lo aggiunge all'array di nomi
             nomi[cont] = argv[opt];
