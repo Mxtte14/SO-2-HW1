@@ -5,7 +5,6 @@
 #include <utmp.h>           // Libreria per prendere alcuni dati dell'utente (Quando ha effettuato l'accesso, l'username)
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <time.h>           // Libreria utilizzata per gestire il tempo (idle, login time)
 #include <string.h>         // Libreria utilizzata per lavorare con le stringhe
 #include <stdlib.h>
@@ -34,7 +33,6 @@ struct IdleTime
 // Struct utilizzata per la gestione dei dati di un utente
 #ifndef USER_H
 #define USER_H
-
 
 // Dichiarazione della struct
 typedef struct users_inf
@@ -71,9 +69,9 @@ typedef struct users_inf
 // Dichiarazione della struct
 struct indent_s
 {
-    int ind_log;
-    int ind_name;
-    int ind_tty;
+    int ind_log;       // Variabile che indica la lunghezza dell'user name piu' grande
+    int ind_name;      // Variabile che indica la lunghezza del real name piu' grande
+    int ind_tty;       // Varaibile che indica la lunghezza della stringa contenente il tty piu' lunga 
 };
 
 #endif /* INDENT_H */

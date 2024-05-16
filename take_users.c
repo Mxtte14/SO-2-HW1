@@ -56,23 +56,26 @@ struct IdleTime get_idle_time(struct IdleTime idle){
 
 // Funzione che prende come parametro una stringa e imposta tutti i caratteri della stringa in minuscolo
 char* string_lower(char* string){
+    // Per ogni carattere della stringa rende il carattere minuscolo e restitusice la stringa modificata
     for(int i = 0; string[i]; i ++) string[i] = tolower(string[i]);
     return string;
 }
 
 // Funzione che presi due stringhe controlla se la seconda e' contenuta nella prima senza distinzione tra minuscolo e maiuscolo
 int str_in_str(char* string1, char* string2){
+    // Salva in dei buffer la prima e la seconda stringa
     char* real_name = strdup(string1);
     char* name = strdup(string2);
-
+    // Rende le due stringa con tutti i caratteri in minuscolo 
     real_name = string_lower(real_name);
     name = string_lower(name);
+    // Prende la prima stringa, la divide in base al separatore " " e controlla se la seconda stringa e' uguale a una parte della prima stringa 
     char* token = strtok(real_name, " ");
     while(token != NULL){
-       if(strcmp(token, name) == 0) return 0;
+       if(strcmp(token, name) == 0) return 0;   // Nel caso in cui la seconda stringa e' uguale a una parte della prima stringa restitusice 0
        token = strtok(NULL, " "); 
     } 
-    
+    // Se la seconda stringa non e' uguale a nessuna parte della prima stringa allora restitusice 1    
     return 1;
 }
 
@@ -95,26 +98,18 @@ t_user get_idle(t_user user){
     return user;
 }
 
-// Funzione che libera la memoria dei malloc inizializzati in init_users_inf
-void free_users_inf(t_user user){
-    free(user.real_name);
-    free(user.usr_dir);
-    free(user.shell_dir);
-    free(user.room_number);
-    free(user.office);
-    free(user.home);
-}
-
 // Funzione che estrae le informaizoni del gecos
 void take_gecos(char *gecos[4], struct passwd* pw, int cont){
+    // Contatore utilizzato per salvare le informazioni del gecos nell'array preso in input chiamato gecos
     int cont_gecos = 0;
     char *temp;
 
-    // Estrae le informaizoni del gecos da pw_gecos
+    // Estrae le informaizoni del gecos da pw_gecos utilizzando strtok con separatore ","
     for (temp = strtok(pw->pw_gecos, ","); temp; temp = strtok(NULL, ",")) {
         if (*temp==0) temp = NULL;
         if (cont_gecos < 4) gecos[cont_gecos++] = temp;
     }
+    // Se non sono esistono alcune informaiozni salva come valore in gecos il valore NULL
     while (cont_gecos<4) gecos[cont_gecos++] = NULL;
 
     // Assegna il nome reale, il room number, l'office phone e l'home phone alle informazioni dell'utente se esistono
@@ -132,39 +127,41 @@ void take_gecos(char *gecos[4], struct passwd* pw, int cont){
     return;
 }
 
+// Funzione che prense un contatore e un nome e controlla se esiste un utente in cui nel nome reale e' contenuto la variabile name
 int get_pwdinf_by_realname(int cont, char* name){
+    // Struct della librearia passwd utilizzata per prendere le informazioni in /etc/passwd 
     struct passwd *pw;
-
+    // Inizilizza l'apertura del file
     setpwent();
-
+    // Itera sul file e prende ogni riga come struct passwd in cui sono salvate le informazioni per ogni riga
     while((pw = getpwent()) != NULL){
         // Assegnazione dell'user name nel caso in cui l'utente non e' stato salvato precedentemente nella struct
         strncpy(users_logged[cont].user_name, pw->pw_name, UT_NAMESIZE);
         users_logged[cont].user_name[UT_NAMESIZE] = '\0';
+        // Inizializza l'array in cui salvare le GECOS
         char* gecos[4];
         take_gecos(gecos, pw, cont);
-
+        // Controlla se l'utente o processo preso ha il nome reale, e se name e' contenuto nel nome reale
         if(gecos[0] != NULL && str_in_str(gecos[0], name) == 0){
-            // Assegna l'user directory e la shel directory
+            // Assegna l'user directory e la shel directory nel caso in cui name e' contenuto nel nome reale
             users_logged[cont].usr_dir = strdup(pw->pw_dir);
             users_logged[cont].shell_dir = strdup(pw->pw_shell);
             users_logged[cont].exist = true;
+            // Aumenta il contatore
             cont ++;
         }
     }
-
+    // Chiude l'apertura del file
     endpwent();
-    return cont;
+    return cont;    // Restituisce il contatore
 }
 
 // Funzione che dato l'username in input prende le informazioni relative a quell'utente da /etc/passwd
 int get_pwdinf(int cont, char* name){
     // Struct utilizzata per ottenere i dati in /etc/passwd di un utente o processo
     struct passwd* pw;
-
     // Prende le informazioni in /etc/passwd del nome utente passato come parametro della funzione
     pw = getpwnam(name);
-
     // Controlla se l'utente e' stato preso correttamente
     if(pw != NULL){
         // Assegnazione dell'user name nel caso in cui l'utente non e' stato salvato precedentemente nella struct
@@ -172,27 +169,26 @@ int get_pwdinf(int cont, char* name){
             strncpy(users_logged[cont].user_name, pw->pw_name, UT_NAMESIZE);
             users_logged[cont].user_name[UT_NAMESIZE] = '\0';
         }
-
         // Divide i gecos e li salva in un array
         char* gecos[4];
         take_gecos(gecos, pw, cont);
-
         // Assegna l'user directory e la shel directory
         users_logged[cont].usr_dir = strdup(pw->pw_dir);
         users_logged[cont].shell_dir = strdup(pw->pw_shell);
         users_logged[cont].exist = true;
-        return cont;
+        return cont;    // Restitusice il contatore utilizzato per iterare nell'array users_logged
     }
     // Controlla se e' stato specificato l'opzione -m (se e' stato specificato allora non esegue il controllo sull'username)
     // Se non e' stato trovato con getpwnam allora potrebbe essere stato specificato un utente con il nome reale
     else if(opts.m == false){
-        cont = get_pwdinf_by_realname(cont, name);
-        return cont;
+        cont = get_pwdinf_by_realname(cont, name);    // Se non ha trovato nessun utente che ha come user_name il name passato in input controlla se esiste un utente che ha un nome reale in cui e' contenuto name 
+        return cont;    // Restitusice il contatore
     }
+    // Se non trova nessun utente imposta il parametro exist a false per indicare che non esiste
     users_logged[cont].exist = false;
 
     // Fine funzione
-    return cont;
+    return cont;  // Restituisce il contatore
 }
 
 // Funziona che prende tutti gli utenti con la libreria utmp (ovvero prende gli utenti non loggati)
