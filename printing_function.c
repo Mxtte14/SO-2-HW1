@@ -33,9 +33,7 @@ char* check_idle_time(struct IdleTime idle, char* idle_print){
         return idle_print;
     }
     // Altrimenti non stampa niente
-    else{
-        return "";
-    }
+    else return "";
 }
 
 // Formattazione del comando -s
@@ -45,11 +43,9 @@ void prints(t_user user, struct indent_s indent){
     int idle_ind;
     check_idle_time(user.idle_time, idle_print);            // Chiama la funzione che restituisce l'idle time sottoforma di stringa secondo il formato che serve in base al valore dell'idle time
     idle_ind = indent.ind_tty + (9 - strlen(idle_print));
-
     // Salva in una stringa temporanea il login time nel formato Mese Giorno ORA:MINUTI
     char buffer[80];
     strftime(buffer, sizeof(buffer), "%B %d %H:%M", user.login_time);
-
     // User name
     printf("%-*s", indent.ind_log + 3, user.user_name);
     // Real name
@@ -95,9 +91,7 @@ struct indent_s set_indent(t_user* users, struct indent_s indent){
             if(indent.ind_log < strlen(users[i].user_name)){indent.ind_log = strlen(users[i].user_name);}
             if(indent.ind_name < strlen(users[i].real_name)){indent.ind_name = strlen(users[i].real_name);}
             // Controlla se e' stato impostato il tty dell'utente, se non e' stato impostato non modifica il valore di indentazione
-            if(strcmp(users[i].tty, "") != 0){
-                if(indent.ind_tty < strlen(users[i].tty)){indent.ind_tty = strlen(users[i].tty);}
-            }
+            if(strcmp(users[i].tty, "") != 0) if(indent.ind_tty < strlen(users[i].tty)){indent.ind_tty = strlen(users[i].tty); 
         }
     }
     // Restituisce la struct contenente le indentazioni sulle parti dell'utente
@@ -124,23 +118,19 @@ void take_file(char* dir){
     sprintf(buffer_pl, "%s/%s", dir, ".plan");
     sprintf(buffer_pr, "%s/%s", dir, ".project");
     sprintf(buffer_pgp, "%s/%s", dir, ".pgpkey");
-    
+    // Apre i file in lettura
     FILE *file_pl = fopen(buffer_pl, "r"); // Apre il file in modalità di sola lettura
     FILE *file_pr = fopen(buffer_pr, "r"); // Apre il file in modalità di sola lettura
     FILE *file_pgp = fopen(buffer_pgp, "r"); // Apre il file in modalità di sola lettura
-    
     // Controlla se i file sono stati aperti correttamente (se non sono stati aperti correttamente allora il valore della variabile di tipo FILE e' NULL)
-    
     if(file_pgp != NULL) {
         printf("PGP key:\n");
         print_file(file_pgp);
     }
-
     if(file_pr != NULL){
         printf("Project:\n");
         print_file(file_pr);
     }
-    
     // Se il file .plan non esiste allora stampa la stringa "No Plan."
     if(file_pl == NULL) printf("No Plan.\n");
     else{
@@ -200,7 +190,6 @@ void print_gecos(t_user users, int ind){
 void print_mail(t_user user){
     // Buffer in cui viene salvato la formattazione dell'orario in cui ha ricevuto l'ultima mail o l'ultima volta che ha letto la mail 
     char buffer[80];
-    
     // Controlla se l'ultima mail che ha ricevuto e' stato dopo l'ultima volta che ha letto le mail 
     if(user.last_mail > user.last_mail_read){
         // Stampa a schermo l'ultima mail ricevuto
@@ -248,22 +237,17 @@ void print_idle_time(struct IdleTime idle){
 
 // Funzione principale in cui stampa le informazioni dell'utente loggato preso in input secondo il formato -l
 void printl(t_user users){
-    
     // Stampa l'user name e il real name
     printf("Login: %-33s", users.user_name);
     printf("Real Name: %s\n", users.real_name);
-
     // Stampa le directory dell'utente e della shell
     printf("Directory: %-29s", users.usr_dir);
     printf("Shell: %s\n", users.shell_dir);
-
     // Stampa le GECOS
     print_gecos(users, 45);
-
     // Stampa quando l'utente ha fatto il login
     char buffer[80];
     strftime(buffer, sizeof(buffer), "%a %B %d %H:%M", users.login_time);
-
     // Stampa quando l'utente ha fatto il login con la timezone, il tty e l'host
     printf("On since %s (%s) on %s from %s\n", buffer, users.timezone, users.tty, users.host);
     print_idle_time(users.idle_time);

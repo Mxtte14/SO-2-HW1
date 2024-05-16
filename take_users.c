@@ -24,13 +24,11 @@ t_user users_logged[100];
 
 // Funzione che restituisce il tempo di idle del sistema
 struct IdleTime get_idle_time(struct IdleTime idle){
-
     // Inizializzazione delle tre variabili
     time_t days = 0;
     time_t hours = 0;
     time_t minutes = 0;
     time_t seconds = idle.seconds;
-
     // Calcola da quanto tempo e' stato avviato il sistema
     while(seconds >= 60){
         minutes = seconds/60;
@@ -44,13 +42,11 @@ struct IdleTime get_idle_time(struct IdleTime idle){
             hours = hours - (days * 24);
         }
     }
-
     // Imposta i valori della struttura della variabile idle
     idle.days = days;
     idle.hours = hours;
     idle.minutes = minutes;
     idle.seconds = seconds;
-
     return idle;
 }
 
@@ -103,7 +99,6 @@ void take_gecos(char *gecos[4], struct passwd* pw, int cont){
     // Contatore utilizzato per salvare le informazioni del gecos nell'array preso in input chiamato gecos
     int cont_gecos = 0;
     char *temp;
-
     // Estrae le informaizoni del gecos da pw_gecos utilizzando strtok con separatore ","
     for (temp = strtok(pw->pw_gecos, ","); temp; temp = strtok(NULL, ",")) {
         if (*temp==0) temp = NULL;
@@ -111,7 +106,6 @@ void take_gecos(char *gecos[4], struct passwd* pw, int cont){
     }
     // Se non sono esistono alcune informaiozni salva come valore in gecos il valore NULL
     while (cont_gecos<4) gecos[cont_gecos++] = NULL;
-
     // Assegna il nome reale, il room number, l'office phone e l'home phone alle informazioni dell'utente se esistono
     if(gecos[0] != NULL) users_logged[cont].real_name = strdup(gecos[0]);
     else users_logged[cont].real_name = NULL;
@@ -122,7 +116,6 @@ void take_gecos(char *gecos[4], struct passwd* pw, int cont){
     else users_logged[cont].office = NULL;
     if(gecos[3] != NULL) users_logged[cont].home = strdup(gecos[3]);
     else users_logged[cont].home = NULL;
-
     // Fine funzione
     return;
 }
@@ -186,7 +179,6 @@ int get_pwdinf(int cont, char* name){
     }
     // Se non trova nessun utente imposta il parametro exist a false per indicare che non esiste
     users_logged[cont].exist = false;
-
     // Fine funzione
     return cont;  // Restituisce il contatore
 }
@@ -197,10 +189,8 @@ void logged_user(){
     int cont = 0;
     // Struct per prendere tutti gli utenti loggati
     struct utmp* ut;
- 
     // Funzione della librerie utmp.h indica l'inizio della lettura del file utmp
     setutent();
-
     // Prende un utente e lo salva in ut, finche riesce a prendere gli utente continua il while, altrimenti se ut == NULL allora non ci sono piu' utenti loggati
     while((ut = getutent()) != NULL){
         // Controlla se e' un utente
@@ -228,10 +218,8 @@ void logged_user(){
     }
     // Assegna NULL al nome utente corrente per indicare la fine dell'array
     users_logged[cont].exist = false;
-
     // Funzione della librerie utmp.h che chiude il file
     endutent();
-
     // Fine funzione
     return;
 }
