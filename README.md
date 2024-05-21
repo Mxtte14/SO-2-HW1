@@ -1,4 +1,7 @@
-## Relazione
+## Relazione HW1 - Realizzazione del comando finger
+###### Nome: Rideewitage Lachitha Sangeeth
+###### Cognome: Perera
+###### Matricola: 2042904
 
 ### Introduzione
 
