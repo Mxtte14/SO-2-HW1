@@ -85,3 +85,30 @@ Una volta che salvo tutti gli utenti loggati, in base al tipo di formattazione s
 Nel caso in cui vengono specificati degli utenti, viene effettuata una ricerca prima sugli utenti loggati salvati precedentemente in un array, nel caso in cui non vengono trovati allora l'utente non e' loggati e viene cercato tale utente in pwd.h sia attraverso il nome utente e il nome reale (quest'ultimo controllo viene effettuato solo se non viene specificato il comando -m).  
 
 ##### Controllo nome reale
+
+Per la ricerca attraverso il nome reale avviene solo quando viene specificato un nome negli argomenti in input; quando viene effettuato il controllo per la verifica dell'esistenza di un utente con tale nome viene sia controlla l'user name che il real name, per il controllo del real name utilizzo una funzione d'appoggio in quanto devo verificare se tale nome specificato e' contenuto nel nome reale (esempio: esiste un utente il cui nomea reale e' Gianni Rossi, e viene chiamato il comando finger rossi, viene restituito l'utente che ha real nome Gianni Rossi). Per la realizzazione della funzione prendo in input il nome specificato negli argomenti in input e il nome reale di un dato utente, utilizzo la funizone strtok(nome reale) per dividere il nome reale e controllo per ogni divisione se una parte del nome reale e' uguale al nome specificato in input.  
+Esempio del codice:
+```
+# Funzione che se il name_inp e' contenuto nel real_name restituisce true, altrimenti false;
+void check_real_name(name_inp, real_name):
+    char* token = strtok(real_name, " ");
+    while(token != NULL){
+        if(name_inp == token) return true
+        token = strtok(NULL, " ");
+    }
+    return False;
+```
+Se viene specificato l'opzione -m questo controllo non viene eseguito.  
+
+#### Idle time
+
+Per ottenere l'idle time di un utente loggato prendo da /dev il dispositivo di comunicazione utilizzato dall'utente loggato; tale file viene aperto attraverso la funzione **stat** tale funzione restituisce varie informazioni del file, come il tempo dell'ultimo accesso (salvato nella variabile st_atime), il tmepo dell'ultima modifica (salvato nella variabile st_mtime) e il tempo dell'ultimo cambiamento di stato del file (salvato nella variabile st_ctime). Una volta aperto il file con tale funzione prendo il cambiamento dell'ultimo stato del file, ovvero il st_ctime, che restituisce un valore che sottrago al tempo corrente per ottenere quanti secondi sono passati dall'ultimo cambiamento di stato, che e' il nostro idle time. Una volta che ottengo la quantita in secondi effettuo dei calcoli per ottenre da quanti minuti/ore e' attivo il dispositivo di comunicazione e vengono salvati nella variabile idle_time dell'utente rappresentato attraverso la struct users_inf.  
+
+#### Mail e file .plan .projects .pgpkey
+
+Per quanto riguarda il recupero delle informazioni della mail, eseguo lo stesso ragionamento utilizzato per l'idle time, salvo in last_mail e last_mail_read in cui salvo rispettivamente st_mtime (il tempo dell'ultima modifica) e st_atime (il tempo dell'ultimo accesso). Una volta salvati tali valori utilizzo la funzione **strftime** per salvare in un buffer il valore di qeuste variabile sotto forma di una stringa composta nel modo seguente:  
+"giornoDellaSettimana giorno Mese Ora:Minuti Anno"  
+Nel caso in cui last_mail e' maggiore di last_mail_read, nel caso stampa sia il last_mail che il last_mail_read, altrimenti stampa solo il last_mail_read.  
+
+Per quanto riguarda i file .plan .projects e .pgpkey vado a prendere i seguenti file nella direcotry principale dell'utente, apro i seguenti file attraverso la funzione fopen e in modalita' lettura iterando su ogni riga del file e stampando riga per riga, appogiandomi a una funzione per poter richiamarlo per entrambi i file.  
+Nel caso in cui viene specificato il comando -p il contenuto dei file non deve essere stampato (se specificato anche il comando -l)
