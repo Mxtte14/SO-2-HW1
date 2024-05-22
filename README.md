@@ -1,7 +1,7 @@
 ## Relazione HW1 - Realizzazione del comando finger
 ###### Nome: Rideewitage Lachitha Sangeeth Cognome: Perera 
 ###### Matricola: 2042904
-
+___
 ### Introduzione
 
 Il comando finger restitusce (in base all'opzione specficata) le informazioni degli utenti loggati o degli utenti/processi (anche non loggati) specificati come argomenti dall'utente che chiama il comando.  
